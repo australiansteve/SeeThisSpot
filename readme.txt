@@ -1,1 +1,0 @@
-SeeThisSpot is a project by AustralianSteve to explore his creative side and learn some new technologies. The original site was made with PHP, but this new iteration will be a NodeJS masterpiece!

@@ -1,7 +1,0 @@
-{
-  "name": "SeeThisSpot",
-  "description": "Search Instagram by location",
-  "repository": "https://github.com/australiansteve/SeeThisSpot",
-  "logo": "http://node-js-sample.herokuapp.com/node.svg",
-  "keywords": ["node", "express", "static", "seethisspot"]
-}
