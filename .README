@@ -1,0 +1,14 @@
+SeeThisSpot
+=============================
+
+SeeThisSpot is an Instagram search website that allows the user to search Instagram for photos taken in any geographical location.
+
+To set up the project:
+
+git clone https://github.com/australiansteve/seethisspot.git
+cd seethisspot
+npm install
+bower install
+grunt
+
+server will be running on http://localhost:3000
