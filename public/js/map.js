@@ -10,6 +10,14 @@ var distanceWidget;
 var GeoMarker;
 var pos;
 
+// DOM Ready =============================================================
+$(document).ready(function() {
+
+    // Populate the user table on initial page load
+    initialize('44.637957', '-63.596490', 500, 14);
+
+});
+
 (function ($) {
       $.each(['show', 'hide'], function (i, ev) {
         var el = $.fn[ev];

@@ -7,6 +7,15 @@ a {
   color: #00B7FF;
 }
 
+#content {
+	max-width: none;
+}
+
+#map-canvas {
+	width: 100%;
+	height: 380px;
+}
+
 #toolbar {
 	border-top: 1px solid lightgrey;
 	border-bottom: 1px solid lightgrey;
@@ -41,6 +50,10 @@ button.seeit {
 	background-color: green;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
+}
+
+img[src*='gstatic.com/'], img[src*='googleapis.com/'] {
+	max-width: none;
 }
 
 @media only screen and (min-width: 642px) {
