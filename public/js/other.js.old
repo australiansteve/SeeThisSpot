@@ -1,0 +1,436 @@
+
+		var timeout;
+		var liking = false;
+		var touched = false;
+		var clicked = false;
+		var dragged = false;
+		var locationId;
+
+		$(document).ready(function () {
+
+			var pathToRoot = "<?php echo $this->webroot; ?>";
+
+			if (getUrlVars()["error"] > "") {
+
+				if (getUrlVars()["error_reason"] == "user_denied") {
+					printNotification("error", "You must log in to Instagram to use this site.", pathToRoot);
+	        	}
+	        	else {
+					printNotification("error", "Unknown error.", pathToRoot);
+	        	}
+
+      		}
+
+        	$("#notification img.closer").click(function() {
+        		$("#notification").html("");
+        		$("#notification").css("border", "0px");
+        	});
+
+
+			$(document).foundation();
+			$(document).foundation().foundation('topbar');
+
+			$("#search-radius").on('input', function() {
+
+				if (isNaN($(this).val())) {
+					//console.log("Invalid input");
+					printNotification("error", "Radius must be a number between 1 and 5000", pathToRoot);
+				}
+				else if ($(this).val() <= 0 || $(this).val() >= 5001) {
+					//console.log("Invalid input");
+					printNotification("error", "Radius must be a number between 1 and 5000", pathToRoot);
+				}
+				else {
+					clearNotification();
+					//console.log('Manual distance: ' + ($(this).val()/1000).toFixed(3));
+					
+					centerMarker.setMap(null);
+					outerMarker.setMap(null);
+					circle.setMap(null);
+					var distanceWidget = new DistanceWidget(map, ($(this).val()/1000).toFixed(3) );
+
+				}
+
+			});
+
+			var locked = false;
+
+			$(window).scroll(function() {
+				
+				if ($('#profile-link').length > 0) {
+				   	if( $(window).scrollTop() >= ($(document).height() - $(window).height())*0.7 ) {
+				       //console.log("bottom!");
+				      	if (typeof oldestShown != 'undefined' && !locked) {
+							console.log("Oldest on this page = " + oldestShown);
+							locked = true;
+							var backfillResult = $.ajax( "/locations/backfill/location:"+locationId+"/oldestShown:" + oldestShown)
+								.done(function(response) {
+									//console.log( "success" );
+									//console.log("Result:" + response);
+
+									//var backfillItems = $(response).find('#backfillresults').html();
+									//console.log("Backfill Items:" + backfillItems);
+
+									//console.log($(response).find('.backfillresult').length + " backfillresults");
+									//console.log($($.parseHTML(response)).children().length + " children");
+
+									$.each( $(response).find('.backfillresult'), function(){
+										//console.log("append result!");
+										$('#resultslist').append($(this));
+									});
+
+									//$('#resultslist').append($(response).find('#backfillresults .backfillresult').html());
+
+									newOldest = $(response).find('.backfillresult').last().find('.created_time').val();
+									if (typeof(newOldest) != "undefined") {
+					                	oldestShown = newOldest;
+					            	}
+									console.log("New oldest shown time:" + oldestShown);
+									locked = false;
+								})
+								.fail(function() {
+									console.log( "error" );
+								})
+								.always(function() {
+									console.log( "complete" );
+								});
+
+				       	}
+				   	}
+				}
+				
+			});
+
+			$('#map-canvas').on('show', function() {
+				google.maps.event.trigger(map, 'resize');
+				
+			});
+			 
+			$('#map-canvas').on('hide', function() {
+				google.maps.event.trigger(map, 'resize');
+				map.setCenter(pos);
+			});
+
+			lat =  <?php if (isset($lat)) { echo $lat;} else {echo "\"current\"";} ?>;
+			lng =  <?php if (isset($lng)) { echo $lng;} else {echo "\"current\"";} ?>;
+		    initialize( lat, lng, 
+		    	<?php 
+                if (!isset($radius)) { $radius=100; } echo $radius; 
+            ?>, 
+            <?php 
+                if ($radius <= 500) { 
+                    echo "15"; 
+                } 
+                elseif ($radius <= 1200) { 
+                    echo "14"; 
+                } 
+                elseif ($radius <= 2500) { 
+                    echo "13"; 
+                } else { 
+                    echo "12"; 
+                } 
+            ?> 
+            );		    
+
+		    window.setTimeout(function(){
+				refreshMap();
+			}, 750);
+
+		    $(document).foundation({
+				orbit: {
+					animation: 'slide',
+					timer_speed: 300,
+					pause_on_hover: false,
+					animation_speed: 500,
+					navigation_arrows: true,
+					bullets: false
+				}
+			});
+
+		    $('#profile-link').on('click', function() {
+		    	window.open('http://www.instagram.com/<?php echo $this->Session->read('User.username'); ?>','_blank');
+		    });
+
+
+			$('body').on('click touchend', '.instagramImage', function(event) {
+				//console.log("Image clicked - " + $(this).attr("id") + ", timeout: " + timeout + ", event: " + event.type);
+
+				if (!dragged) { 
+					if (event.type == "touchend" && !touched) {
+						//alert('touch')
+						touched = true;
+						setTimeout(function(){ touched = false; }, 250); //This is to stop click and touchend events both firing for android mobile. 
+
+						if (clicked)
+						{
+							return false; //return because click event has already been fired
+						}
+					}
+					if (event.type == "click" && !clicked) {
+						//alert('click')
+						clicked = true;
+						setTimeout(function(){ clicked = false; }, 250); //This is to stop click and touchend events both firing for android mobile.
+
+						if (touched)
+						{
+							return false; //return because touchend event has already been fired
+						}
+					}
+					
+					var id = $(this).attr("id");
+
+					if (timeout) {
+						//console.log("Double click - Like/unlike media " + id);
+						timeout = window.clearTimeout(timeout);
+						likeUnlikeMedia(id);
+					}
+					else {
+					    timeout = window.setTimeout(function(){
+							//console.log("Single click - Display info " + $('#details_'+id).is(':hidden'));
+							timeout = window.clearTimeout(timeout);
+							if ($('#details_'+id).is(':hidden')) {
+								displayMediaInfo(id);
+							}
+						}, 250);
+				    }
+				}
+				else {
+					dragged = false; // reset flag that stops dialog from showing on ipad after image is dragged ie page is scrolled
+				}
+			});
+
+			$('body').on('touchmove', '.instagramImage', function(event) {
+				dragged = true; //flag stops dialog from showing on ipad after image is dragged ie page is scrolled
+			});
+
+			$('body').on('mousedown touchstart', '.likebutton', function() {
+				//console.log('like button mouse press');
+			    $(this).css('background-color','green');   
+			});
+			$('body').on('mouseup touchend', '.likebutton', function() {
+				//console.log('like button mouse up');
+			    $(this).css('background-color','white'); 
+			    likeUnlikeMedia($(this).attr('value'));
+			});
+			$('body').on('touchmove mouseout', '.likebutton', function() {
+				//console.log('like button mouse out');
+			    $(this).css('background-color','white'); //reset to white - no likey
+			});
+
+
+		});
+
+		function locationSearch(){
+			document.searchForm.lat.value = centerMarker.getPosition().lat();
+			document.searchForm.lng.value = centerMarker.getPosition().lng();
+
+			console.log("Submitting search: LAT = " + document.searchForm.lat.value + ", LNG = " + document.searchForm.lng.value + ", RADIUS = " + document.searchForm.searchradius.value);
+
+			document.searchForm.action = "/locations/search/lat:"+centerMarker.getPosition().lat()+"/lng:"+centerMarker.getPosition().lng()+"/radius:"+document.searchForm.searchradius.value+"#searchresults";
+
+			return true;
+		}
+
+		function locationSubscribe(lat, lng, radius) {
+			subcribeResult = $.ajax( "/subscriptions/create/lat:"+lat+"/lng:"+lng+"/radius:"+radius)
+							.done(function(response) {
+								//console.log( "success" );
+								console.log("Location ID:" + response);
+								locationId = response;
+							})
+							.fail(function() {
+								console.log( "error" );
+							})
+							.always(function() {
+								console.log( "complete" );
+							});
+
+		}
+
+		function loginAndBackfill(lat, lng, radius) {
+			console.log("log in and backfill location " + locationId);
+
+			if (locationId != "") {
+				returnURL = "return="+encodeURIComponent("/locations/search/lat:"+lat+"/lng:"+lng+"/radius:"+radius+"/backfill");
+
+				window.location.href = "/users/authenticate?"+returnURL;
+
+			}
+			else {
+				console.log("Cannot log in to backfill location, locationId is not set");
+			}
+		}
+
+		function loginAndLike(mediaId) {
+			console.log("log in and like image");
+
+			var lat = "<?php echo $this->Session->read('lat'); ?>";
+			var lng = "<?php echo $this->Session->read('lng'); ?>";
+			var radius = "<?php echo $this->Session->read('radius'); ?>";
+
+			returnURL = "return="+encodeURIComponent("/locations/search/lat:"+lat+"/lng:"+lng+"/radius:"+radius+"/like:"+mediaId+"/");
+
+			window.location.href = "/users/authenticate?"+returnURL;
+		}
+
+		function logoutInstagram() {
+			window.open("http://instagram.com/accounts/logout/",'_blank');
+			window.location = "/users/logout";
+		}
+
+		function displayMediaInfo(mediaId) {
+			$('#modaldetails').html($('#details_'+mediaId).html());
+			$('#modalimage').html($('#'+mediaId).parent().html());
+			$('#detailmodal').foundation('reveal', 'open');
+
+		}
+
+		function likeUnlikeMedia(mediaId, lat, lng, radius) {
+		    //console.log('like ' + mediaId);
+
+		    if (!liking) {
+		    	liking = true;
+		    	setTimeout(function(){ liking = false; }, 1000); //Only allow one 'liking' per second, this is to stop click and touchend events both firing for android mobile
+
+			    var currentlyLikes = $('#like-heart-'+ mediaId).hasClass('liked');
+			    //console.log("Current like status: " + currentlyLikes);
+
+			    var accessToken = "<?php echo $this->Session->read('User.access_token'); ?>";
+			    console.log("Access token: " + accessToken);
+
+			    if (accessToken != "")
+				{
+					//User is logged in
+				    if (!currentlyLikes) {
+				    	//Display likeheart before sending request for more immediate feedback
+				    	var modalImageHeight = $('#detailmodal #'+mediaId).height();
+				    	var modalIconTop = "calc(" + (modalImageHeight/2) + "px - 25px)";
+				    	var modalStyles = {
+					      display: "block",
+					      top: modalIconTop
+					    };
+
+				    	var skinnyImageHeight = $('.searchresult #'+mediaId).height();
+				    	var skinnyIconTop = "calc(" + (skinnyImageHeight/2) + "px - 25px)";
+					    var skinnyStyles = {
+					      display: "block",
+					      top: skinnyIconTop
+					    };
+
+					    if ($('#detailmodal #'+ mediaId+':visible').length == 1) {
+				    		$('#detailmodal #like-action-'+ mediaId).css(modalStyles);
+					    }
+					    else {
+				    		$('.searchresult #like-action-'+ mediaId).css(skinnyStyles);
+					    }
+
+				   		var likeResult = $.ajax( "/media/like/"+mediaId)
+							.done(function(response) {
+								//console.log("Result:" + response);
+
+								$('.searchresult #like-heart-'+ mediaId).toggleClass('liked');
+								$('#modaldetails #like-heart-'+ mediaId).toggleClass('liked');
+
+								updateLikeCount(mediaId);
+
+							})
+							.fail(function() {
+								console.log( "error liking media" );
+							})
+							.always(function() {
+								//console.log( "complete" );
+				    			$('.searchresult #like-action-'+ mediaId).fadeOut(250);
+				    			$('#detailmodal #like-action-'+ mediaId).fadeOut(250);
+							});
+					}
+					else {
+						//Display breakheart before sending request for more immediate feedback
+						var modalImageHeight = $('#detailmodal #'+mediaId).height();
+				    	var modalIconTop = "calc(" + (modalImageHeight/2) + "px - 25px)";
+				    	var modalStyles = {
+					      display: "block",
+					      top: modalIconTop
+					    };
+
+				    	var unlikeModalIconTop = "calc(" + (modalImageHeight/2) + "px - 47px)";
+				    	var unlikeModalStyles = {
+					      display: "block",
+					      top: unlikeModalIconTop
+					    };
+
+				    	var skinnyImageHeight = $('.searchresult #'+mediaId).height();
+				    	var skinnyIconTop = "calc(" + (skinnyImageHeight/2) + "px - 25px)";
+					    var skinnyStyles = {
+					      display: "block",
+					      top: skinnyIconTop
+					    };
+
+				    	var unlikeSkinnyIconTop = "calc(" + (skinnyImageHeight/2) + "px - 47px)";
+					    var unlikeSkinnyStyles = {
+					      display: "block",
+					      top: unlikeSkinnyIconTop
+					    };
+
+						if ($('#detailmodal #'+ mediaId+':visible').length == 1) {
+				    		$('#detailmodal #like-action-'+ mediaId).css(modalStyles);
+				    		$('#detailmodal #unlike-action-'+ mediaId).css(unlikeModalStyles);
+						}
+						else {
+				    		$('.searchresult #like-action-'+ mediaId).css(skinnyStyles);
+				    		$('.searchresult #unlike-action-'+ mediaId).css(unlikeSkinnyStyles);
+						}
+
+						var unlikeResult = $.ajax( "/media/unlike/"+mediaId)
+							.done(function(response) {
+								//console.log("Result:" + response);
+
+								$('.searchresult #like-heart-'+ mediaId).toggleClass('liked');
+								$('#modaldetails #like-heart-'+ mediaId).toggleClass('liked');
+
+								updateLikeCount(mediaId);
+
+							})
+							.fail(function() {
+								console.log( "error unliking media" );
+							})
+							.always(function() {
+								//console.log( "complete" );
+				    			$('.searchresult #like-action-'+ mediaId).fadeOut(250);
+				    			$('.searchresult #unlike-action-'+ mediaId).fadeOut(500);
+				    			$('#detailmodal #like-action-'+ mediaId).fadeOut(250);
+				    			$('#detailmodal #unlike-action-'+ mediaId).fadeOut(500);
+							});
+					}
+				}
+				else
+				{
+					//Need to log in
+					//Potentially show dialog message?
+					loginAndLike(mediaId, lat, lng, radius);
+
+				}
+			}
+
+		}
+
+		function updateLikeCount(mediaId) {
+			//'like' complete, get new like info for the image
+			var likesResult = $.ajax( "/media/likes/"+mediaId)
+			.done(function(response) {
+				//console.log("New Likes Info:" + response);
+				
+				var likes = JSON.parse(response)
+				
+				//console.log("Count:" + likes['data'].length);
+				$('.searchresult #like-count-'+ mediaId).html(likes['data'].length);
+				$('#modaldetails #like-count-'+ mediaId).html(likes['data'].length);
+
+			})
+			.fail(function() {
+				console.log( "error getting new media like information" );
+			})
+			.always(function() {
+				//console.log( "complete" );
+			});
+		}
+
