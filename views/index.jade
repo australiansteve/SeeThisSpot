@@ -1,7 +1,20 @@
 extends layout
 
 block content
-  div(class="small-12 small-centered medium-10 medium-centered large-8 large-centered columns panel radius")
-    h1= title
-    p Welcome to #{title}
-    button Hello
+  div#header(class="row")
+    div(class="small-12 small-centered medium-10 medium-centered large-8 large-centered columns radius")
+      img(src="/img/seethisspot_header.png")
+  div#toolbar(class="row")
+    div(class="small-12 small-centered medium-6 medium-centered columns")
+      form(name="searchForm" action="/search" method="POST")
+        div(class="row")
+          div(class="small-3 columns text-right")
+            label(class="inline") Radius: 
+          div(class="small-4 columns")
+            input(type="text" id="searchradius" name="searchradius" value="500" text-align="right")
+          div(class="small-2 columns")
+            label(class="inline") meters
+          div(class="small-3 columns")
+            button(class="seeit" type="submit" onclick="return locationSearch();") See It!
+  div#map-panel(class="row")
+    div(class="small-12 small-centered medium-8 medium-centered columns")
