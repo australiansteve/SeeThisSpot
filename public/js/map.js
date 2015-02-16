@@ -313,8 +313,8 @@ RadiusWidget.prototype.updateTextInput = function() {
 
 	console.log("Distance:" + distance + ", meters: " + Math.round(distanceMeters));
 
-	$('#search-radius').attr('value', Math.round(distanceMeters));
-	$('#search-radius').val(Math.round(distanceMeters));
+	$('#searchradius').attr('value', Math.round(distanceMeters));
+	$('#searchradius').val(Math.round(distanceMeters));
 
 };
 
