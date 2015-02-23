@@ -7,11 +7,12 @@ html(lang='en')
     block css
       link(rel='stylesheet', href='/css/foundation.css')
       link(rel='stylesheet', href='/css/style.css')
+      link(rel="stylesheet", href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css")
     block js
       script(src='/components/jquery/dist/jquery.min.js')
       script(src='/components/modernizr/modernizr.js')
       script(src='http://localhost:35729/livereload.js')
-      script(src='https://maps.googleapis.com/maps/api/js?key=AIzaSyDQVUAUDm3fRWRlhh8mRI-7Rtd-zOeXckE')
+      script(type='text/javascript' src='https://maps.googleapis.com/maps/api/js?key=AIzaSyDQVUAUDm3fRWRlhh8mRI-7Rtd-zOeXckE&libraries=places')
       script(type='text/javascript' src='/js/geolocationmarker-compiled.js')
       script(src='/js/map.js')
   body
@@ -19,20 +20,29 @@ html(lang='en')
       div(class="small-12 small-centered medium-10 medium-centered large-8 large-centered columns radius")
         a(href="/")
           img(src="/img/seethisspot_header.png")
+    div#searchbar(class="row")
+      div(class="small-12 small-centered medium-6 medium-centered columns")
+        form(name="gsearch" action="" method="get")
+          div(class="row")
+            div(class="small-12 columns")
+              input(type="text" id="locsearch" name="locsearch" placeholder="Search for a spot")
+    div#map-panel(class="row")
+      div(class="small-12 small-centered columns")
+        div#map-canvas
     div#toolbar(class="row")
       div(class="small-12 small-centered medium-6 medium-centered columns")
-        form(name="searchForm" action="/search" method="POST")
+        form(name="search" id="search" action="/search" method="POST")
+          input#lat(type="hidden")
+          input#lng(type="hidden")
           div(class="row")
             div(class="small-3 columns text-right")
               label(class="inline") Radius: 
             div(class="small-4 columns")
-              input(type="text" id="searchradius" name="searchradius" value="500" text-align="right")
+              input(type="text" id="searchradius" name="searchradius" value= radius text-align="right")
             div(class="small-2 columns")
               label(class="inline") meters
             div(class="small-3 columns")
               button(class="seeit" type="submit" onclick="return locationSearch();") See It!
-    div#map-panel(class="row")
-      div(class="small-12 small-centered medium-10 medium-centered columns")
-        div#map-canvas
     block content
     script(src='/components/foundation/js/foundation.min.js')
+    script(src='/components/foundation/js/foundation/foundation.alert.js')

@@ -16,7 +16,7 @@ a {
 	height: 380px;
 }
 
-#toolbar {
+#toolbar, #searchbar {
 	border-top: 1px solid lightgrey;
 	border-bottom: 1px solid lightgrey;
 	padding: 0.25em 0em;
@@ -24,11 +24,7 @@ a {
 	input[type="text"] {
 		padding:0em 0.1em;
 		margin: 0em 0em;
-		font-size: 2em;
-		max-width: 5em;
-		text-align: right;
 	}
-
 	label.inline {
 		margin:0em 0.5em;
 		font-size: 1.1em;
@@ -40,6 +36,14 @@ a {
 		padding:0.75em 0em 0.25em 0.1em;
 	}
 
+}
+
+#toolbar {
+	input[type="text"] {
+		font-size: 2em;
+		max-width: 5em;
+		text-align: right;
+	}
 }
 
 button.seeit {

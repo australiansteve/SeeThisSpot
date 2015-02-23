@@ -14,19 +14,45 @@ var pos;
 $(document).ready(function() {
 
     // Populate the user table on initial page load
-    initialize('44.637957', '-63.596490', 500, 14);
+    initialize('28.0836269', '-80.60810889999999',  500, 14);
 
+    $(document).on('submit', '#search', function(e) {
+	    e.preventDefault(); // Prevents the page from refreshing
+	    var $this = $(this); // `this` refers to the current form element
+	    $('#lat').value = centerMarker.getPosition().lat();
+	    $('#lng').value = centerMarker.getPosition().lng();
+	    $.post(
+	        "/search/lat:"+centerMarker.getPosition().lat()+"/lng:"+centerMarker.getPosition().lng()+"/radius:"+document.search.searchradius.value+"#searchresults", // Gets the URL to sent the post to
+	        $this.serialize(), // Serializes form data in standard format
+	        function(data) { console.log(data) },
+	        "json" // The format the response should be in
+	    );
+    });
+
+
+    $("#searchradius").on('input', function() {
+      $('#toolbar+.data-alert').remove();
+    if (isNaN($(this).val()) || $(this).val() <= 0 || $(this).val() >= 5001) {
+      console.log("Invalid input");
+
+      //printNotification("error", "Radius must be a number between 1 and 5000", pathToRoot);
+      var $alert = $( "<div class='row data-alert'><div data-alert class='small-8 medium-6 columns small-centered alert-box alert radius'>Must be 1 to 5000<a href='#' class='close'>&times;</a></div></div>" );
+ 
+      $( "#toolbar" ).after( $alert );
+      $(document).foundation('alert', 'reflow');
+    }
+    else {
+      //clearNotification();
+      console.log('Manual distance: ' + ($(this).val()/1000).toFixed(3));
+
+      distanceWidget.clear_markers();
+      distanceWidget = new DistanceWidget(map, ($(this).val()/1000).toFixed(3) );
+
+    }
+
+    });
+		
 });
-
-(function ($) {
-      $.each(['show', 'hide'], function (i, ev) {
-        var el = $.fn[ev];
-        $.fn[ev] = function () {
-          this.trigger(ev);
-          return el.apply(this, arguments);
-        };
-      });
-    })(jQuery);
 
 function initialize(lat, lng, radius, zoom) {
 
@@ -40,7 +66,8 @@ function initialize(lat, lng, radius, zoom) {
 			style: google.maps.ZoomControlStyle.Default
 		}
 	};
-  	map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+  
+  map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
 	// Try HTML5 geolocation
 	if(navigator.geolocation) {
@@ -55,13 +82,42 @@ function initialize(lat, lng, radius, zoom) {
 			console.log("Setting center: " + pos);
 			map.setCenter(pos);
 
-			google.maps.event.addListenerOnce(map, 'idle', function() {
+			// Create the search box and link it to the UI element.
+        var input = /** @type {HTMLInputElement} */(
+          document.getElementById('locsearch'));
+        //map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
-				distanceWidget = new DistanceWidget(map, (document.searchForm.searchradius.value/1000));
-				GeoMarker = new GeolocationMarker(map);
-				GeoMarker.setMinimumAccuracy(100);
+      var searchBox = new google.maps.places.SearchBox(
+        /** @type {HTMLInputElement} */(input));
 
-			});
+      // Listen for the event fired when the user selects an item from the
+      // pick list. Retrieve the matching places for that item.
+      google.maps.event.addListener(searchBox, 'places_changed', function() {
+        var places = searchBox.getPlaces();
+
+        if (places.length > 0) {
+          map.setCenter(new google.maps.LatLng(places[0].geometry.location.k, places[0].geometry.location.D));
+          distanceWidget.clear_markers();
+          distanceWidget = new DistanceWidget(map, (document.search.searchradius.value/1000));
+        }
+
+      });
+
+      // Bias the SearchBox results towards places that are within the bounds of the
+      // current map's viewport.
+      google.maps.event.addListener(map, 'bounds_changed', function() {
+        var bounds = map.getBounds();
+        searchBox.setBounds(bounds);
+      });
+
+      google.maps.event.addListenerOnce(map, 'idle', function() {
+
+        distanceWidget = new DistanceWidget(map, (document.search.searchradius.value/1000));
+        GeoMarker = new GeolocationMarker(map);
+        GeoMarker.setMinimumAccuracy(100);
+
+      });
+
 
 		}, function() {
 			console.log("geo fail");
@@ -323,7 +379,8 @@ RadiusWidget.prototype.updateTextInput = function() {
  * Update the radius when the distance has changed.
  */
 DistanceWidget.prototype.clear_markers = function() {
-	console.log("setMap(null)");
-  	this.marker.setMap(null);
+  	centerMarker.setMap(null);
+    outerMarker.setMap(null);
+    circle.setMap(null);
 };
 
