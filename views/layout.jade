@@ -32,8 +32,8 @@ html(lang='en')
     div#toolbar(class="row")
       div(class="small-12 small-centered medium-6 medium-centered columns")
         form(name="search" id="search" action="/search" method="POST")
-          input#lat(type="hidden")
-          input#lng(type="hidden")
+          input#lat(name="lat" type="hidden" value= lat)
+          input#lng(name="lng" type="hidden" value= lng)
           div(class="row")
             div(class="small-3 columns text-right")
               label(class="inline") Radius: 
@@ -42,7 +42,7 @@ html(lang='en')
             div(class="small-2 columns")
               label(class="inline") meters
             div(class="small-3 columns")
-              button(class="seeit" type="submit" onclick="return locationSearch();") See It!
+              button(class="seeit" type="submit") See It!
     block content
     script(src='/components/foundation/js/foundation.min.js')
     script(src='/components/foundation/js/foundation/foundation.alert.js')

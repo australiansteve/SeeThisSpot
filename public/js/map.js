@@ -13,20 +13,28 @@ var pos;
 // DOM Ready =============================================================
 $(document).ready(function() {
 
-    // Populate the user table on initial page load
-    initialize('28.0836269', '-80.60810889999999',  500, 14);
+    // Initialize the map
+    initialize($('#lat').attr("value"), $('#lng').attr("value"), $('#searchradius').attr("value"), 14);
 
     $(document).on('submit', '#search', function(e) {
 	    e.preventDefault(); // Prevents the page from refreshing
+      if ($('#toolbar+.data-alert').length > 0)
+      {
+        console.log("Not submitting");
+        return false;
+      }
+
 	    var $this = $(this); // `this` refers to the current form element
-	    $('#lat').value = centerMarker.getPosition().lat();
-	    $('#lng').value = centerMarker.getPosition().lng();
+      $('#lat').attr("value", centerMarker.getPosition().lat());
+      $('#lng').attr("value", centerMarker.getPosition().lng());
+      
 	    $.post(
-	        "/search/lat:"+centerMarker.getPosition().lat()+"/lng:"+centerMarker.getPosition().lng()+"/radius:"+document.search.searchradius.value+"#searchresults", // Gets the URL to sent the post to
+	        "/search", // Gets the URL to sent the post to
 	        $this.serialize(), // Serializes form data in standard format
 	        function(data) { console.log(data) },
 	        "json" // The format the response should be in
 	    );
+      
     });
 
 
@@ -74,7 +82,7 @@ function initialize(lat, lng, radius, zoom) {
 		navigator.geolocation.getCurrentPosition(function(position) {
 			
 			if (lat!="current" && lng != "current") {
-				pos = new google.maps.LatLng(lat, lng);
+				pos = new google.maps.LatLng(lat, lng);        
 			}
 			else {
 				pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
