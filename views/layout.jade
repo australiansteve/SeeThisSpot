@@ -15,9 +15,10 @@ html(lang='en')
       script(type='text/javascript' src='https://maps.googleapis.com/maps/api/js?key=AIzaSyDQVUAUDm3fRWRlhh8mRI-7Rtd-zOeXckE&libraries=places')
       script(type='text/javascript' src='/js/geolocationmarker-compiled.js')
       script(src='/js/map.js')
+      script(src='/js/common.js')
   body
     div#header(class="row")
-      div(class="small-12 small-centered medium-10 medium-centered large-8 large-centered columns radius")
+      div(class="small-12 small-centered medium-10 medium-centered large-8 large-centered columns")
         a(href="/")
           img(src="/img/seethisspot_header.png")
     div#searchbar(class="row")
@@ -44,5 +45,7 @@ html(lang='en')
             div(class="small-3 columns")
               button(class="seeit" type="submit") See It!
     block content
+    block footer
     script(src='/components/foundation/js/foundation.min.js')
     script(src='/components/foundation/js/foundation/foundation.alert.js')
+    script(src='/components/foundation/js/foundation/foundation.reveal.js')

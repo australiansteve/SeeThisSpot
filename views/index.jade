@@ -4,3 +4,13 @@ block content
   div#content(class="row")
     div(class="small-12 small-centered columns")
       h1 Welcome
+
+block footer
+  div#footer(class="row")
+    div(class="small-12 small-centered text-center columns")
+        a#authenticate(class="radius button" href="#" data-reveal-id="loginModal") Login to Instagram for more...
+
+  div#loginModal(class="reveal-modal" data-reveal)
+    h2 This is a modal
+    iframe#instaLogin
+    a(class="close-reveal-modal") &#215;
