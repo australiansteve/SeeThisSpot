@@ -86,4 +86,10 @@ module.exports = function (grunt) {
     'develop',
     'watch'
   ]);
+  
+  grunt.registerTask('heroku', [
+    'sass', 
+    'develop'
+  ]);
+
 };
