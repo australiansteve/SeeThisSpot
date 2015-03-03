@@ -86,10 +86,13 @@ module.exports = function (grunt) {
     'develop',
     'watch'
   ]);
-  
-  grunt.registerTask('heroku', [
-    'sass', 
-    'develop'
+
+  grunt.registerTask('heroku:production', [
+    'sass'
+  ]);
+
+  grunt.registerTask('heroku:development', [
+    'sass'
   ]);
 
 };
