@@ -24,10 +24,10 @@ router.get('/', function(req, res) {
     instaResponse.on('data', function (chunk) {
       console.log('BODY: ' + chunk);
     });
-  }).pipe(res);
+  });
 
-  //res.setHeader('Content-Type', 'text/html');
-  //res.end("<html><body>Hi</body></html>");
+  res.setHeader('Content-Type', 'text/html');
+  res.end("<html><body>Hi</body></html>");
 });
 
 module.exports = router;
