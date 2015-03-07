@@ -12,7 +12,7 @@ router.get('/', function(req, res) {
 
   var options = {
     host: 'api.instagram.com',
-    port: 80,
+    port: '80',
     path: '/oauth/authorize/?client_id='+ config.instagram.client_id +'&redirect_uri='+ config.instagram.redirect_url +'&response_type=code&scope=likes',
     method: 'POST'
   };
@@ -24,7 +24,7 @@ router.get('/', function(req, res) {
     instaResponse.on('data', function (chunk) {
       console.log('BODY: ' + chunk);
     });
-  });
+  }).end();
 
   res.setHeader('Content-Type', 'text/html');
   res.end("<html><body>Hi</body></html>");
