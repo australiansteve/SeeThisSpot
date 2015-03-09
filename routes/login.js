@@ -10,11 +10,12 @@ router.get('/', function(req, res) {
 
   //https://api.instagram.com/oauth/authorize/?client_id=3b0c2cadab27402a90302919d12eeccd&redirect_uri=http://seethisspot.herokuapp.com/login&response_type=code&scope=likes
 
+
   var options = {
     host: 'api.instagram.com',
     port: '80',
     path: '/oauth/authorize/?client_id='+ config.instagram.client_id +'&redirect_uri='+ config.instagram.redirect_url +'&response_type=code&scope=likes',
-    method: 'POST'
+    method: 'GET'
   };
 
   http.request(options, function(instaResponse) {
