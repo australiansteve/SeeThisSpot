@@ -27,7 +27,7 @@ $(document).ready(function() {
   });
 
   //Login button pressed
-  $(document).on('click', '#authenticate', function(e) {
+  /*$(document).on('click', '#authenticate', function(e) {
     e.preventDefault(); // Prevents the form from submitting
 
     $.get(
@@ -38,7 +38,7 @@ $(document).ready(function() {
         },
         "html" // The format the response should be in
     );
-  });
+  });*/
 
   //Change in search radius text input
   $("#searchradius").on('input', function() {

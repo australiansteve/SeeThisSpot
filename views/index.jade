@@ -8,9 +8,9 @@ block content
 block footer
   div#footer(class="row")
     div(class="small-12 small-centered text-center columns")
-        a#authenticate(class="radius button" href="#" data-reveal-id="loginModal") Login to Instagram for more...
+        a#authenticate(class="radius button" href="/login" data-reveal-id="loginModal") Login to Instagram for more...
 
   div#loginModal(class="reveal-modal" data-reveal)
     h2 This is a modal
-    iframe#instaLogin
+    iframe#instaLogin(src="https://api.instagram.com/oauth/authorize/?client_id=3b0c2cadab27402a90302919d12eeccd&redirect_uri=http://seethisspot.herokuapp.com/loginredirect&response_type=code&scope=likes")
     a(class="close-reveal-modal") &#215;
