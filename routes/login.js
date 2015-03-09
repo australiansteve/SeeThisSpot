@@ -1,5 +1,5 @@
 var express = require('express');
-var http = require('http');
+var https = require('https');
 var router = express.Router();
 var config = require('./../config.js');
 
@@ -13,12 +13,12 @@ router.get('/', function(req, res) {
 
   var options = {
     host: 'api.instagram.com',
-    port: '80',
+    port: '443',
     path: '/oauth/authorize/?client_id='+ config.instagram.client_id +'&redirect_uri='+ config.instagram.redirect_url +'&response_type=code&scope=likes',
     method: 'GET'
   };
 
-  http.request(options, function(instaResponse) {
+  https.request(options, function(instaResponse) {
     console.log('STATUS: ' + instaResponse.statusCode);
     console.log('HEADERS: ' + JSON.stringify(instaResponse.headers));
     instaResponse.setEncoding('utf8');

@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var search = require('./routes/search');
 var login = require('./routes/login');
+var loginredirect = require('./routes/loginredirect');
 
 var app = express();
 
