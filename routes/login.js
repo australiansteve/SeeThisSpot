@@ -13,7 +13,7 @@ router.get('/', function(req, res) {
 
   var options = {
     host: 'api.instagram.com',
-    port: '80',
+    port: '443',
     path: '/oauth/authorize/?client_id='+ config.instagram.client_id +'&redirect_uri='+ config.instagram.redirect_url +'&response_type=code&scope=likes',
     method: 'GET'
   };
