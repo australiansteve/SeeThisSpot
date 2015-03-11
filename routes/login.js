@@ -44,10 +44,44 @@ router.get('/', function(req, res) {
     };
 
     // Set up the request
-    var post_req = https.request(post_options, function(res) {
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            console.log('Response: ' + chunk);
+    var post_req = https.request(post_options, function(post_res) {
+
+        var data = '';
+        post_res.setEncoding('utf8');
+
+        post_res.on('end',function(){
+          var obj = JSON.parse(data);
+
+          console.log('Response: ' + JSON.stringify(obj));
+          
+          if(obj.access_token)
+          {
+            console.log("Authentication complete");
+
+            res.statusCode = 302; 
+            res.setHeader("Location", config.base_url + "?login=true");
+            res.end();
+          }
+          else if (obj.error_type)
+          {
+            console.error("Authentication error");
+
+            res.statusCode = 302; 
+            res.setHeader("Location", config.base_url + "?login=false");
+            res.end();
+          }
+          else
+          {
+            console.warn("Authentication unknown response");
+
+            res.statusCode = 302; 
+            res.setHeader("Location", config.base_url + "?login=unknown");
+            res.end();
+          }
+        })
+
+        post_res.on('data', function (chunk) {
+            data += chunk;
         });
     });
 
@@ -58,11 +92,6 @@ router.get('/', function(req, res) {
   }
   else if (req.query.complete)
   {
-    console.log("Authentication complete");
-
-    res.statusCode = 302; 
-    res.setHeader("Location", config.base_url + "?login=true");
-    res.end();
   }
   else
   {
