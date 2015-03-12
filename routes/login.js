@@ -58,25 +58,19 @@ router.get('/', function(req, res) {
           {
             console.log("Authentication complete");
 
-            res.statusCode = 302; 
-            res.setHeader("Location", config.base_url + "?login=true");
-            res.end();
+            res.redirect( config.base_url + "?login=true");
           }
           else if (obj.error_type)
           {
             console.error("Authentication error");
 
-            res.statusCode = 302; 
-            res.setHeader("Location", config.base_url + "?login=false");
-            res.end();
+            res.redirect(config.base_url + "?login=false");
           }
           else
           {
             console.warn("Authentication unknown response");
 
-            res.statusCode = 302; 
-            res.setHeader("Location", config.base_url + "?login=unknown");
-            res.end();
+            res.redirect(config.base_url + "?login=unknown");
           }
         })
 
@@ -98,9 +92,7 @@ router.get('/', function(req, res) {
     //Starting authentication process
     console.log("Login to Instagram. Client ID: " + config.instagram.client_id);
 
-    res.statusCode = 302; 
-    res.setHeader("Location", 'https://api.instagram.com/oauth/authorize/?client_id='+ config.instagram.client_id +'&redirect_uri='+ config.instagram.redirect_url +'&response_type=code&scope=likes');
-    res.end();
+    res.redirect('https://api.instagram.com/oauth/authorize/?client_id='+ config.instagram.client_id +'&redirect_uri='+ config.instagram.redirect_url +'&response_type=code&scope=likes');
   }
 
 
