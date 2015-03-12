@@ -4,6 +4,8 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var session = require('express-session');
+var config = require('./config.js');
 
 var routes = require('./routes/index');
 var search = require('./routes/search');
@@ -25,6 +27,19 @@ app.use(bodyParser.urlencoded({
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//Session setup
+app.use(
+  session(
+    {
+      secret: config.session_secret,
+      resave: false,
+      saveUninitialized : true
+    }
+  )
+);
+var sess;
+
+//Routes
 app.use('/', routes);
 app.use('/search', search);
 app.use('/login', login);

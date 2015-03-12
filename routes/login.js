@@ -57,6 +57,9 @@ router.get('/', function(req, res) {
           if(obj.access_token)
           {
             console.log("Authentication complete");
+            sess = req.session;
+            sess.access_token = obj.access_token;
+            sess.user = obj.user;
 
             res.redirect( config.base_url + "?login=true");
           }

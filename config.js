@@ -1,6 +1,7 @@
 var config = {}
 
 config.base_url = 'http://seethisspot.herokuapp.com';
+config.session_secret = process.env.SESSION_SECRET || 'abc123';
 
 config.instagram = {};
 
