@@ -26,20 +26,6 @@ $(document).ready(function() {
     
   });
 
-  //Login button pressed
-  /*$(document).on('click', '#authenticate', function(e) {
-    e.preventDefault(); // Prevents the form from submitting
-
-    $.get(
-        "/login", // URL to send the request to
-        function(data) { 
-          console.log(data);
-          $('#instaLogin').contents().find('body').append(data);
-        },
-        "html" // The format the response should be in
-    );
-  });*/
-
   //Change in search radius text input
   $("#searchradius").on('input', function() {
     $('#toolbar+.data-alert').remove();
@@ -63,6 +49,6 @@ $(document).ready(function() {
 
   });
   
-  $(document).foundation('reveal', 'reflow');
+  $(document).foundation('offcanvas', 'reflow');
 
 });

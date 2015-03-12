@@ -20,32 +20,51 @@ html(lang='en')
     div#header(class="row")
       div(class="small-12 small-centered medium-10 medium-centered large-8 large-centered columns")
         a(href="/")
-          img(src="/img/seethisspot_header.png")
-    div#searchbar(class="row")
-      div(class="small-12 small-centered medium-6 medium-centered columns")
-        form(name="gsearch" action="" method="get")
-          div(class="row")
-            div(class="small-12 columns")
-              input(type="text" id="locsearch" name="locsearch" placeholder="Search for a spot")
-    div#map-panel(class="row")
-      div(class="small-12 small-centered columns")
-        div#map-canvas
-    div#toolbar(class="row")
-      div(class="small-12 small-centered medium-6 medium-centered columns")
-        form(name="search" id="search" action="/search" method="POST")
-          input#lat(name="lat" type="hidden" value= lat)
-          input#lng(name="lng" type="hidden" value= lng)
-          div(class="row")
-            div(class="small-3 columns text-right")
-              label(class="inline") Radius: 
-            div(class="small-4 columns")
-              input(type="text" id="searchradius" name="searchradius" value= radius text-align="right")
-            div(class="small-2 columns")
-              label(class="inline") meters
-            div(class="small-3 columns")
-              button(class="seeit" type="submit") See It!
-    block content
-    block footer
+          img(src="/img/seethisspot_header.png") 
+
+    div(class="off-canvas-wrap" data-offcanvas)
+      div(class="inner-wrap")
+        nav(class="tab-bar")
+          section(class="left-small")
+            a(class="left-off-canvas-toggle menu-icon" href="#")
+              span
+          
+        aside(class="left-off-canvas-menu")
+          ul(class="off-canvas-list")
+            li
+              label SeeThisSpot
+            li
+              a(href="/")
+                i(class="fa fa-search")
+                | New Search
+            li 
+              a(href="#") Something else
+        div#searchbar(class="row")
+          div(class="small-12 small-centered medium-6 medium-centered columns")
+            form(name="gsearch" action="" method="get")
+              div(class="row")
+                div(class="small-12 columns")
+                  input(type="text" id="locsearch" name="locsearch" placeholder="Search for a spot")
+        div#map-panel(class="row")
+          div(class="small-12 small-centered columns")
+            div#map-canvas
+        div#toolbar(class="row")
+          div(class="small-12 small-centered medium-6 medium-centered columns")
+            form(name="search" id="search" action="/search" method="POST")
+              input#lat(name="lat" type="hidden" value= lat)
+              input#lng(name="lng" type="hidden" value= lng)
+              div(class="row")
+                div(class="small-3 columns text-right")
+                  label(class="inline") Radius: 
+                div(class="small-4 columns")
+                  input(type="text" id="searchradius" name="searchradius" value= radius text-align="right")
+                div(class="small-2 columns")
+                  label(class="inline") meters
+                div(class="small-3 columns")
+                  button(class="seeit" type="submit") See It!
+        block content
+        block footer
+        a(class="exit-off-canvas")
     script(src='/components/foundation/js/foundation.min.js')
+    script(src='/components/foundation/js/foundation/foundation.offcanvas.js')
     script(src='/components/foundation/js/foundation/foundation.alert.js')
-    script(src='/components/foundation/js/foundation/foundation.reveal.js')
