@@ -1,6 +1,22 @@
 extends layout
 
+block menu
+  aside(class="left-off-canvas-menu")
+    ul(class="off-canvas-list")
+      li
+        label SeeThisSpot
+      li
+        a(href="/")
+          i(class="fa fa-search")
+          | New Search
+      li
+        label Instagram - #{username}
+      li 
+        a#logout(href="#" data-reveal-id="logoutModal") Log out
+
 block content
   div#content(class="row")
     div(class="small-12 small-centered columns")
       h1 Welcome #{username}
+
+

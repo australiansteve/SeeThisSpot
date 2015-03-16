@@ -49,6 +49,17 @@ $(document).ready(function() {
 
   });
   
+  //Logout menu item clicked
+  $(document).on('click', '#logout', function(e) {
+    $( "#logoutModal" ).append( "<img src='http://instagram.com/accounts/logout/' width='0' height='0'/>" );
+
+    window.setTimeout(function() {
+      window.location = "/login/logout";
+    }, 3000);
+
+  });
+
   $(document).foundation('offcanvas', 'reflow');
+  $(document).foundation('reveal', 'reflow');
 
 });

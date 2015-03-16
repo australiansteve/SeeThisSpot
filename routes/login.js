@@ -1,4 +1,5 @@
 var express = require('express');
+var http = require('http');
 var https = require('https');
 var querystring = require('querystring');
 var router = express.Router();
@@ -98,6 +99,26 @@ router.get('/', function(req, res) {
     res.redirect('https://api.instagram.com/oauth/authorize/?client_id='+ config.instagram.client_id +'&redirect_uri='+ config.instagram.redirect_url +'&response_type=code&scope=likes');
   }
 
+
+});
+
+
+/* GET logout. */
+
+router.get('/logout', function(req, res) {
+    sess = req.session;
+
+    if (sess.access_token || sess.user)
+    {
+      console.log("Logging out of Instagram: " + sess.user.username);
+      req.session.destroy(function () {
+          res.redirect(config.base_url + "?logout=loggedout");
+      });
+
+    }
+    else {
+      res.redirect(config.base_url + "?logout=notrequired");
+    }
 
 });
 

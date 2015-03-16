@@ -28,17 +28,8 @@ html(lang='en')
           section(class="left-small")
             a(class="left-off-canvas-toggle menu-icon" href="#")
               span
-          
-        aside(class="left-off-canvas-menu")
-          ul(class="off-canvas-list")
-            li
-              label SeeThisSpot
-            li
-              a(href="/")
-                i(class="fa fa-search")
-                | New Search
-            li 
-              a(href="#") Something else
+        block menu
+
         div#searchbar(class="row")
           div(class="small-12 small-centered medium-6 medium-centered columns")
             form(name="gsearch" action="" method="get")
@@ -65,6 +56,14 @@ html(lang='en')
         block content
         block footer
         a(class="exit-off-canvas")
+
+
+    div#logoutModal(class="reveal-modal" data-reveal aria-labelledby="firstModalTitle" aria-hidden="true" role="dialog")
+      i(class="fa fa-spinner fa-pulse fa-2x") 
+      span(class="title") Logging you out of Instagram
+      a(class="close-reveal-modal" aria-label="Close") &#215;
+
     script(src='/components/foundation/js/foundation.min.js')
     script(src='/components/foundation/js/foundation/foundation.offcanvas.js')
     script(src='/components/foundation/js/foundation/foundation.alert.js')
+    script(src='/components/foundation/js/foundation/foundation.reveal.js')
