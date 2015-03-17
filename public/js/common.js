@@ -1,9 +1,6 @@
 // DOM Ready =============================================================
 $(document).ready(function() {
 
-  // Initialize the map
-  initialize($('#lat').attr("value"), $('#lng').attr("value"), $('#searchradius').attr("value"), 14);
-
   //'See It!' button pressed!!
   $(document).on('submit', '#search', function(e) {
     e.preventDefault(); // Prevents the form from submitting
@@ -44,9 +41,7 @@ $(document).ready(function() {
 
       distanceWidget.clear_markers();
       distanceWidget = new DistanceWidget(map, ($(this).val()/1000).toFixed(3) );
-
     }
-
   });
   
   //Logout menu item clicked
@@ -58,6 +53,9 @@ $(document).ready(function() {
     }, 3000);
 
   });
+
+  // Initialize the map
+  initialize($('#lat').attr("value"), $('#lng').attr("value"), $('#searchradius').attr("value"), 14);
 
   $(document).foundation('offcanvas', 'reflow');
   $(document).foundation('reveal', 'reflow');

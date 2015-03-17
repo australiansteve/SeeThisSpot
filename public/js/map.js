@@ -8,13 +8,13 @@ var centerMarker;
 var outerMarker;
 var distanceWidget;
 var GeoMarker;
-var pos;
 
 function initialize(lat, lng, radius, zoom) {
 
-  	var mapOptions = {
+  console.log("lat: " + lat + " lng: " + lng + " radius: " + radius + " zoom: " + zoom);
+
+  var mapOptions = {
 		zoom: zoom,
-		center: new google.maps.LatLng(lat, lng),
 		mapTypeId: google.maps.MapTypeId.ROADMAP,
 		panControl: false,
 		zoomControl: true,
@@ -23,99 +23,78 @@ function initialize(lat, lng, radius, zoom) {
 		}
 	};
   
-  map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-
 	// Try HTML5 geolocation
 	if(navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(function(position) {
 			
-			if (lat!="current" && lng != "current") {
-				pos = new google.maps.LatLng(lat, lng);        
-			}
+			if (lat=="current" || lng == "current") {
+        mapOptions.center = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+      }
 			else {
-				pos = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-			}
-			console.log("Setting center: " + pos);
-			map.setCenter(pos);
+        mapOptions.center = new google.maps.LatLng(lat, lng);
+      }
 
-			// Create the search box and link it to the UI element.
-        var input = /** @type {HTMLInputElement} */(
-          document.getElementById('locsearch'));
-        //map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
-      var searchBox = new google.maps.places.SearchBox(
-        /** @type {HTMLInputElement} */(input));
-
-      // Listen for the event fired when the user selects an item from the
-      // pick list. Retrieve the matching places for that item.
-      google.maps.event.addListener(searchBox, 'places_changed', function() {
-        var places = searchBox.getPlaces();
-
-        if (places.length > 0) {
-          map.setCenter(new google.maps.LatLng(places[0].geometry.location.k, places[0].geometry.location.D));
-          distanceWidget.clear_markers();
-          distanceWidget = new DistanceWidget(map, (document.search.searchradius.value/1000));
-        }
-
-      });
-
-      // Bias the SearchBox results towards places that are within the bounds of the
-      // current map's viewport.
-      google.maps.event.addListener(map, 'bounds_changed', function() {
-        var bounds = map.getBounds();
-        searchBox.setBounds(bounds);
-      });
-
-      google.maps.event.addListenerOnce(map, 'idle', function() {
-
-        distanceWidget = new DistanceWidget(map, (document.search.searchradius.value/1000));
-        GeoMarker = new GeolocationMarker(map);
-        GeoMarker.setMinimumAccuracy(100);
-
-      });
-
+      displayMap(mapOptions, radius);
 
 		}, function() {
-			console.log("geo fail");
-			handleNoGeolocation(true);
+			console.log("geo fail"); //Display error message
+      mapOptions.center = new google.maps.LatLng(-37.818206, 144.967714);
+      map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
 		}, {timeout:5000});
-		console.log("get position done");
 	} else {
-		// Browser doesn't support Geolocation
-		console.log("no geo");
-		handleNoGeolocation(false);
-	}
-}
+		// Browser doesn't support Geolocation or it is switched off
+		console.log("no geo"); //Display helpful message
 
-function handleNoGeolocation(errorFlag) {
-	if (errorFlag) {
-		var content = 'Error: The Geolocation service failed. Please try refreshing the page';
-	} else {
-		var content = 'Error: Your browser doesn\'t support geolocation.';
+    mapOptions.center = new google.maps.LatLng(-37.818206, 144.967714);
+    mapOptions.zoom = 18;
+    
+    displayMap(mapOptions, radius);
 	}
 
-	var options = {
-		map: map,
-		position: new google.maps.LatLng(60, 105),
-		content: content
-	};
+  // Create the search box and link it to the UI element.
+  var input = /** @type {HTMLInputElement} */(
+      document.getElementById('locsearch'));
+    //map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
-	var infowindow = new google.maps.InfoWindow(options);
-	map.setCenter(options.position);
+  var searchBox = new google.maps.places.SearchBox(
+    /** @type {HTMLInputElement} */(input));
+
+  // Listen for the event fired when the user selects an item from the
+  // pick list. Retrieve the matching places for that item.
+  google.maps.event.addListener(searchBox, 'places_changed', function() {
+    var places = searchBox.getPlaces();
+
+    if (places.length > 0) {
+      map.setCenter(new google.maps.LatLng(places[0].geometry.location.k, places[0].geometry.location.D));
+      distanceWidget.clear_markers();
+      distanceWidget = new DistanceWidget(map, (document.search.searchradius.value/1000));
+    }
+
+  });
+
+  // Bias the SearchBox results towards places that are within the bounds of the
+  // current map's viewport.
+  google.maps.event.addListener(map, 'bounds_changed', function() {
+    var bounds = map.getBounds();
+    searchBox.setBounds(bounds);
+  });
+
 }
 
-function refreshMap() {
-	$('#map-canvas').hide();
+function displayMap(mapOptions, radius) {
 
-	window.setTimeout(function(){
-		$('#map-canvas').show();
-	}, 250);
+  map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
-	window.setTimeout(function(){
-		google.maps.event.trigger(map, 'resize');
-	}, 500);
-	
+  google.maps.event.addListenerOnce(map, 'idle', function() {
+
+    distanceWidget = new DistanceWidget(map, (radius/1000));
+    GeoMarker = new GeolocationMarker(map);
+    GeoMarker.setMinimumAccuracy(100);
+
+  });
 }
+
 /**
  * The following all comes from
  * https://developers.google.com/maps/articles/mvcfun?csw=1
