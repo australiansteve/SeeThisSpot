@@ -52,6 +52,20 @@ function initialize(lat, lng, radius, zoom) {
     displayMap(mapOptions, radius);
 	}
 
+}
+
+function displayMap(mapOptions, radius) {
+
+  map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+  google.maps.event.addListenerOnce(map, 'idle', function() {
+
+    distanceWidget = new DistanceWidget(map, (radius/1000));
+    GeoMarker = new GeolocationMarker(map);
+    GeoMarker.setMinimumAccuracy(100);
+
+  });
+
   // Create the search box and link it to the UI element.
   var input = /** @type {HTMLInputElement} */(
       document.getElementById('locsearch'));
@@ -80,19 +94,6 @@ function initialize(lat, lng, radius, zoom) {
     searchBox.setBounds(bounds);
   });
 
-}
-
-function displayMap(mapOptions, radius) {
-
-  map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-
-  google.maps.event.addListenerOnce(map, 'idle', function() {
-
-    distanceWidget = new DistanceWidget(map, (radius/1000));
-    GeoMarker = new GeolocationMarker(map);
-    GeoMarker.setMinimumAccuracy(100);
-
-  });
 }
 
 /**
