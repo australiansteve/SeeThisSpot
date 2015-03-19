@@ -14,13 +14,11 @@ $(document).ready(function() {
     $('#lat').attr("value", centerMarker.getPosition().lat());
     $('#lng').attr("value", centerMarker.getPosition().lng());
     
-    $.post(
-        "/search", // Gets the URL to sent the post to
-        $this.serialize(), // Serializes form data in standard format
-        function(data) { console.log(data) },
-        "json" // The format the response should be in
-    );
-    
+    //Search ajax request off to /search which will first create a subscription, then start returning results
+    $.get('/search', $this.serialize(), function( data ) {
+      console.log(data);
+    });
+
   });
 
   //Change in search radius text input
