@@ -88,8 +88,7 @@ var Instagram = function() {
       });
 
       get_res.on('end',function(){
-        var obj = JSON.parse(data);
-        callback(obj);          
+        callback(data);          
       })
 
     }).on('error', function(e) {

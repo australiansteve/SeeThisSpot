@@ -21,10 +21,10 @@ router.get('/', function(req, res) {
   //Next we need to get the latest images for that spot  
   Instagram.performSearch(search.lat, search.lng, search.radius, 'now', function(results) {
 
-    //console.log('Search results: ' + JSON.stringify(results));
-    
+    var resultsObj = JSON.parse(results);
+
     //put the time of the last result into the session to make backfilling quicker later
-    sess.search.min_time = results.data[results.data.length-1].created_time;
+    sess.search.min_time = resultsObj.data[resultsObj.data.length-1].created_time;
 
     res.setHeader('Content-Type', 'application/json');
     res.end(results);
@@ -44,10 +44,10 @@ router.get('/backfill', function(req, res) {
   //Next we need to get the latest images for that spot  
   Instagram.performSearch(sess.search.lat, sess.search.lng, sess.search.radius, sess.search.min_time, function(results){
 
-    //console.log('Backfill results: ' + JSON.stringify(results));
+    var resultsObj = JSON.parse(results);
     
     //put the time of the last result into the session to make backfilling quicker later
-    sess.search.min_time = results.data[results.data.length-1].created_time;
+    sess.search.min_time = resultsObj.data[resultsObj.data.length-1].created_time;
 
     res.setHeader('Content-Type', 'application/json');
     res.end(results);
