@@ -10,50 +10,50 @@ var Instagram = require('./../helpers/instagram.js');
 router.get('/', function(req, res) {
   console.log("Perform search with coordinates: " + req.query['lat'] + ", " + req.query['lng'] + ', radius: ' + req.query['searchradius']);
   
-  Instagram.createGeography(req.query['lat'], req.query['lng'], req.query['searchradius'], function(createdGeo) {
+  //First, save these search parameters in the session so that we can backfill easier later
+  sess = req.session;
+  var search = {};
+  search.lat = req.query['lat'];
+  search.lng = req.query['lng'];
+  search.radius = req.query['searchradius'];
+  sess.search = search;
 
-    console.log('Response: ' + JSON.stringify(createdGeo));
-    
-    if (createdGeo.meta.code = '200') {
-      //Success
-      //First, save these search parameters in the session so that we can backfill easier later
-      sess = req.session;
-      var search = {};
-      search.geo_id = createdGeo.data.object_id;
-      search.lat = req.query['lat'];
-      search.lng = req.query['lng'];
-      search.radius = req.query['searchradius'];
-      sess.search = search;
+  //Next we need to get the latest images for that spot  
+  Instagram.performSearch(search.lat, search.lng, search.radius, 'now', function(results){
 
-      //Next we need to get the latest images for that geoID  
-      Instagram.performSearch(search.geo_id, function(results){
+    //console.log('Search results: ' + results);
+    var obj = JSON.parse(results);
+    //put the time of the last result into the session to make backfilling quicker later
+    sess.search.min_time = obj.data[obj.data.length-1].created_time;
 
-        console.log('Search results: ' + results);
-        res.setHeader('Content-Type', 'application/json');
-        res.end(results);
-
-      });
-
-    }
-    else {
-      //Some sort of error
-      res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify(createdGeo));
-    }
+    res.setHeader('Content-Type', 'application/json');
+    res.end(results);
 
   });
 
 });
 
-/* GET search subscription confirmation - called by IG when . */
 
-router.get('/perform', function(req, res) {
+/* GET backfill results for a location */
+
+router.get('/backfill', function(req, res) {
+
   sess = req.session;
-  console.log("Got call to perform a search. Geography ID:" + sess.search.geo_id);
-  //https://api.instagram.com/v1/geographies/{geo-id}/media/recent?client_id=YOUR-CLIENT_IDs
+  //TODO: check that sess.search exists - otherwise return gracefully
 
-  res.setHeader('Content-Type', 'application/json');
-  res.end(req.query['hub.challenge']);
+  //Next we need to get the latest images for that spot  
+  Instagram.performSearch(sess.search.lat, sess.search.lng, sess.search.radius, sess.search.min_time, function(results){
+
+    //console.log('Backfill results: ' + results);
+    var obj = JSON.parse(results);
+    //put the time of the last result into the session to make backfilling quicker later
+    sess.search.min_time = obj.data[obj.data.length-1].created_time;
+
+    res.setHeader('Content-Type', 'application/json');
+    res.end(results);
+
+  });
+
 });
 
 /* GET search subscription confirmation - called by IG when . */

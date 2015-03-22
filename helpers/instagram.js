@@ -4,7 +4,7 @@ var Instagram = function() {
   var querystring = require('querystring');
   var config = require('./../config.js');
 
-  var createGeography = function(lat, lng, radius, callback) {
+  var createGeoSubscription = function(lat, lng, radius, callback) {
 
     // Build the post string from an object
     var post_data = querystring.stringify({
@@ -38,7 +38,6 @@ var Instagram = function() {
 
       post_res.on('end',function(){
         var obj = JSON.parse(data);
-
         callback(obj);          
       })
 
@@ -64,59 +63,44 @@ var Instagram = function() {
       'lat' : lat,
       'lng' : lng,
       'distance' : radius,
-      'max_time' : max_time,
+      'count' : '20',
       'client_id' : config.instagram.client_id
     });
 
-    var get_path = '/v1/media/search' + get_data;
+    if (max_time != 'now')
+    {
+      get_data += '&' + querystring.stringify({
+        'max_time' : new Date().getTime()
+      });
+    }
+
+    //Attach the search parameters to the end of the path using querystring
+    var get_path = '/v1/media/search?' + get_data;
     console.log("GET path for search: " + get_path);
 
-    // An object of options to indicate where to post to
-    var get_options = {
-        host: 'api.instagram.com',
-        port: '443',
-        path: get_path,
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Content-Length': get_data.length
-        }
-    };
-
-    // Set up the request
-    var get_req = https.request(get_options, function(get_res) {
+    https.get('https://api.instagram.com' + get_path, function(get_res) {
 
       var data = '';
       get_res.setEncoding('utf8');
 
-      get_res.on('end',function(){
-        console.log("Finished search: " + data);
-        callback(data);          
-      })
-
-      get_res.on('data', function (chunk) {
-          data += chunk;
+      get_res.on('data', function(d) {
+        data += d;
       });
 
+      get_res.on('end',function(){
+        var obj = JSON.parse(data);
+        callback(obj);          
+      })
+
+    }).on('error', function(e) {
+      console.error(e);
     });
 
-    // post the data
-    //get_req.write(get_data);
-    get_req.end();
-
-  }
-
-  var backfill = function(token, lat, lng, radius, max_time) {
-      //perform backfill search
-      //https://api.instagram.com/v1/media/search?lat=48.858844&lng=2.294351&access_token=21793052.f59def8.9419bf1fad7b447eb2c5e9a6fd4ae19b
-
-      return "";
   }
 
   return {
-      createGeography: createGeography,
-      performSearch: performSearch,
-      backfill: backfill
+      createGeoSubscription: createGeoSubscription,
+      performSearch: performSearch
   }
 }();
 
