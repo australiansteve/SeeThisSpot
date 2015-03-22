@@ -3,65 +3,60 @@ var router = express.Router();
 var https = require('https');
 var querystring = require('querystring');
 var config = require('./../config.js');
+var Instagram = require('./../helpers/instagram.js'); 
 
-/* POST search results page. */
+/* GET search results page. */
 
 router.get('/', function(req, res) {
   console.log("Perform search with coordinates: " + req.query['lat'] + ", " + req.query['lng'] + ', radius: ' + req.query['searchradius']);
   
-  // Build the post string from an object
-  var post_data = querystring.stringify({
-    'client_id' : config.instagram.client_id,
-    'client_secret': config.instagram.client_secret,
-    'object': 'geography',
-    'aspect' : 'media',
-    'lat' : req.query['lat'],
-    'lng' : req.query['lng'],
-    'radius' : req.query['searchradius'],
-    'callback_url' : config.base_url + "/search/subscribe"
-  });
+  Instagram.createGeography(req.query['lat'], req.query['lng'], req.query['searchradius'], function(createdGeo) {
 
-  // An object of options to indicate where to post to
-  var post_options = {
-      host: 'api.instagram.com',
-      port: '443',
-      path: '/v1/subscriptions/',
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Content-Length': post_data.length
-      }
-  };
+    console.log('Response: ' + JSON.stringify(createdGeo));
+    
+    if (createdGeo.meta.code = '200') {
+      //Success
+      //First, save these search parameters in the session so that we can backfill easier later
+      sess = req.session;
+      var search = {};
+      search.geo_id = createdGeo.data.object_id;
+      search.lat = req.query['lat'];
+      search.lng = req.query['lng'];
+      search.radius = req.query['searchradius'];
+      sess.search = search;
 
-  // Set up the request
-  var post_req = https.request(post_options, function(post_res) {
+      //Next we need to get the latest images for that geoID  
+      Instagram.performSearch(search.geo_id, function(results){
 
-    var data = '';
-    post_res.setEncoding('utf8');
+        console.log('Search results: ' + results);
+        res.setHeader('Content-Type', 'application/json');
+        res.end(results);
 
-    post_res.on('end',function(){
-      var obj = JSON.parse(data);
+      });
 
-      console.log('Response: ' + JSON.stringify(obj));
-      
-      //'obj' is the subscription object which contains a geography ID.
-      //Next we need to get the latest images for that geoID
-      
+    }
+    else {
+      //Some sort of error
       res.setHeader('Content-Type', 'application/json');
-      res.end(JSON.stringify(obj));
-    })
-
-    post_res.on('data', function (chunk) {
-        data += chunk;
-    });
+      res.end(JSON.stringify(createdGeo));
+    }
 
   });
-
-  // post the data
-  post_req.write(post_data);
-  post_req.end();
 
 });
+
+/* GET search subscription confirmation - called by IG when . */
+
+router.get('/perform', function(req, res) {
+  sess = req.session;
+  console.log("Got call to perform a search. Geography ID:" + sess.search.geo_id);
+  //https://api.instagram.com/v1/geographies/{geo-id}/media/recent?client_id=YOUR-CLIENT_IDs
+
+  res.setHeader('Content-Type', 'application/json');
+  res.end(req.query['hub.challenge']);
+});
+
+/* GET search subscription confirmation - called by IG when . */
 
 router.get('/subscribe', function(req, res) {
   console.log("Got call to confirm a subscription. Mode:" + req.query['hub.mode'] + ", challenge: " + req.query['hub.challenge'] + ", token: " + req.query['hub.verifyToken']);
