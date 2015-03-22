@@ -15,9 +15,10 @@ $(document).ready(function() {
     $('#lng').attr("value", centerMarker.getPosition().lng());
     
     //Search ajax request off to /search which will first create a subscription, then start returning results
-    $.get('/search', $this.serialize(), function( data ) {
-      console.log(data);
-    });
+    $.get('/search', $this.serialize(), function( renderedResults ) {
+      console.log(renderedResults);
+      $('#content').append(renderedResults);
+    }, 'html');
 
   });
 

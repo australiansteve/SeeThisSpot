@@ -1,6 +1,5 @@
-extends layout
-
-block content
+- var values = data;
+each val in values.length ? values : ['There are no values']
   div#content(class="row")
     div(class="small-12 small-centered columns")
-      h1 Results
+      img(src= val.images.standard_resolution.url)
