@@ -8,3 +8,20 @@ each result in values.length ? values : ['There are no values']
             i(id="like-action-"+result.id class="fa fa-heart like-action" style="display: none;")
             i(id="unlike-action-"+result.id class="fa fa-ban unlike-action" style="display: none;")
             img(id= result.id class="instagramImage" src= result.images.standard_resolution.url)
+          div(id="details_"+result.id class="row show-for-small-only imagedetails")
+            div(class="small-2 columns profilepic")
+              a(href="http://instagram.com/"+result.user.username)
+                img(class="profilepic" src= result.user.profile_picture)
+            div(class="small-8 columns caption")
+              a(href="http://instagram.com/"+result.user.username)= result.user.username
+              span= result.caption ? result.caption.text : ""
+            div(class="small-2 columns")
+              div(class="row")
+                div(class="small-12 columns likes")
+                  div(class="likebutton" value=result.id)
+                    span(id="like-count-"+result.id class="raw")= result.likes.count
+                    i(id="like-heart-"+result.id class="fa fa-heart")
+              div(class="row")
+                div(class="small-12 columns timer")
+                  i(class="fa fa-clock")
+                  span(class="raw")= result.created_time
