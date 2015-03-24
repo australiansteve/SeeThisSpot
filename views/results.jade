@@ -1,5 +1,10 @@
 - var values = data;
-each val in values.length ? values : ['There are no values']
-  div#content(class="row")
-    div(class="small-12 small-centered columns")
-      img(src= val.images.standard_resolution.url)
+each result in values.length ? values : ['There are no values']
+  li
+    div(class="row")
+      div(class="small-12 small-centered medium-10 medium-offset-1 columns searchresult")
+        div(class="row")
+          div(class="small-12 columns")
+            i(id="like-action-"+result.id class="fa fa-heart like-action" style="display: none;")
+            i(id="unlike-action-"+result.id class="fa fa-ban unlike-action" style="display: none;")
+            img(id= result.id class="instagramImage" src= result.images.standard_resolution.url)

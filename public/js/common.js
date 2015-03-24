@@ -14,10 +14,13 @@ $(document).ready(function() {
     $('#lat').attr("value", centerMarker.getPosition().lat());
     $('#lng').attr("value", centerMarker.getPosition().lng());
     
+    //Clear the current search results
+    //$('#resultslist').html("");
+
     //Search ajax request off to /search which will first create a subscription, then start returning results
     $.get('/search', $this.serialize(), function( renderedResults ) {
       console.log(renderedResults);
-      $('#content').append(renderedResults);
+      $('#resultslist').append(renderedResults);
     }, 'html');
 
   });
