@@ -1,6 +1,11 @@
 // DOM Ready =============================================================
 $(document).ready(function() {
 
+  //'Enter' is hit in the google map search bar - stop the form from submitting/page reloading
+  $(document).on('submit', 'form[name="gsearch"]', function(e) {
+    e.preventDefault(); // Prevents the form from submitting
+  });
+
   //'See It!' button pressed!!
   $(document).on('submit', '#search', function(e) {
     e.preventDefault(); // Prevents the form from submitting
