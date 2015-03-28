@@ -70,7 +70,7 @@ var Instagram = function() {
     if (max_time != 'now')
     {
       get_data += '&' + querystring.stringify({
-        'max_time' : new Date().getTime()
+        'max_timestamp' : max_time
       });
     }
 

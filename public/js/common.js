@@ -66,6 +66,27 @@ $(document).ready(function() {
   // Initialize the map
   initialize($('#lat').attr("value"), $('#lng').attr("value"), $('#searchradius').attr("value"), 14);
 
+  //Scrolling triggers backfill when the user is logged in to Instagram
+  var backfillInProgress = false;
+  $(window).scroll(function() {
+        
+    if ($('#logout').length > 0 && !backfillInProgress) {
+
+      if( $(window).scrollTop() >= ($(document).height() - $(window).height())*0.7 ) {
+
+        //Backfill ajax request off to /search which will first create a subscription, then start returning results
+        $.get('/search/backfill', function( renderedResults ) {
+          $('#resultslist').append(renderedResults);
+          backfillInProgress = false;
+        }, 'html');
+
+        backfillInProgress = true;
+      }
+    }
+        
+  });
+
+
   $(document).foundation('offcanvas', 'reflow');
   $(document).foundation('reveal', 'reflow');
 

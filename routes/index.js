@@ -27,8 +27,6 @@ router.get('/', function(req, res) {
           console.log(err);
         }
         else {
-          console.log("Displaying index with results: " + html);
-          
           res.render('index_loggedin', { title: 'SeeThisSpot.com', 
                                         radius: sess.search.radius, 
                                         zoom: '14', 
