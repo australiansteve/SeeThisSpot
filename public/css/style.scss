@@ -10,6 +10,44 @@ a {
 #searchresults {
 	max-width: none;
   margin-top: 1em;
+
+  .columns {
+    padding:0;
+  }
+
+  #resultsList li {
+    padding: 0.5em 0 ;
+  }
+
+  .imagedetails .profilepic, #detailmodal .profilepic {
+    max-width: 60px;
+    margin: 0.2em;
+  }
+
+  .imagedetails .caption {
+    padding: 0.2em;
+
+    span {
+      padding: 0.2em;
+    }
+  }
+
+  .imagedetails .likes, .imagedetails .timer {
+    text-align: right;
+    padding: 0.2em;
+
+    i.fa {
+      padding: 0em 0.4em;
+    }
+  }
+
+  .likebutton {
+    cursor: pointer;
+  }
+
+  .timer {
+    opacity: 0.5;
+  }
 }
 
 #map-canvas {
@@ -65,6 +103,11 @@ button.seeit {
 .off-canvas-list i.fa {
 	padding-right: 0.5em;
 }
+
+.row .row {
+  margin: 0px;
+}
+
 img[src*='gstatic.com/'], img[src*='googleapis.com/'] {
 	max-width: none;
 }
