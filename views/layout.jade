@@ -39,20 +39,21 @@ html(lang='en')
         div#map-panel(class="row")
           div(class="small-12 small-centered columns")
             div#map-canvas
-        div#toolbar(class="row")
-          div(class="small-12 small-centered medium-6 medium-centered columns")
-            form(name="search" id="search" action="/search" method="POST")
+        form(name="search" id="search" action="/search" method="POST")
+          div#toolbar(class="row")
+            div(class="small-12 small-centered medium-6 medium-centered columns")
               input#lat(name="lat" type="hidden" value= lat)
               input#lng(name="lng" type="hidden" value= lng)
               div(class="row")
-                div(class="small-3 columns text-right")
+                div(class="small-4 columns text-right")
                   label(class="inline") Radius: 
-                div(class="small-4 columns")
-                  input(type="text" id="searchradius" name="searchradius" value= radius text-align="right")
-                div(class="small-2 columns")
-                  label(class="inline") meters
                 div(class="small-3 columns")
-                  button(class="seeit" type="submit") See It!
+                  input(type="text" id="searchradius" name="searchradius" value= radius text-align="right")                  
+                div(class="small-5 columns")
+                  label(class="inline") meters
+          div(class="row")
+            div(class="small-12 small-centered text-center columns")
+              button(class="radius button seeit" type="submit") See it!
         block content
         block footer
         a(class="exit-off-canvas")

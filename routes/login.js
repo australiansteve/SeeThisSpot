@@ -62,7 +62,20 @@ router.get('/', function(req, res) {
             sess.access_token = obj.access_token;
             sess.user = obj.user;
 
-            res.redirect( config.base_url + "?login=true");
+            if (sess.return_to == 'backfill') {
+              //return to the last search
+
+              var searchString = querystring.stringify({
+                'lat' : sess.search.lat,
+                'lng' : sess.search.lng,
+                'searchradius' : sess.search.radius
+              });
+
+              res.redirect( config.base_url + "/?" + searchString);
+            }
+            else {
+              res.redirect( config.base_url );
+            }
           }
           else if (obj.error_type)
           {
@@ -88,15 +101,24 @@ router.get('/', function(req, res) {
     post_req.end();
 
   }
-  else if (req.query.complete)
-  {
-  }
   else
   {
     //Starting authentication process
     console.log("Login to Instagram. Client ID: " + config.instagram.client_id);
 
-    res.redirect('https://api.instagram.com/oauth/authorize/?client_id='+ config.instagram.client_id +'&redirect_uri='+ config.instagram.redirect_url +'&response_type=code&scope=likes');
+    var qs = querystring.stringify({
+      'client_id' : config.instagram.client_id,
+      'redirect_uri' : config.instagram.redirect_url,
+      'response_type' : 'code',
+      'scope' : 'likes'
+    });
+
+    if (req.query['return_to']) {
+      sess = req.session;
+      sess.return_to = req.query['return_to'];
+    }
+
+    res.redirect('https://api.instagram.com/oauth/authorize/?' + qs);
   }
 
 

@@ -26,6 +26,8 @@ $(document).ready(function() {
     $.get('/search', $this.serialize(), function( renderedResults ) {
       //console.log(renderedResults);
       $('#resultslist').append(renderedResults);
+
+      $('#footer>div').append("<a id='authenticate' class='radius button' href='/login?return_to=backfill'>Login to Instagram for more...</a>");
     }, 'html');
 
   });
@@ -50,7 +52,7 @@ $(document).ready(function() {
       distanceWidget = new DistanceWidget(map, ($(this).val()/1000).toFixed(3) );
     }
   });
-  
+
   //Logout menu item clicked
   $(document).on('click', '#logout', function(e) {
     $( "#logoutModal" ).append( "<img src='http://instagram.com/accounts/logout/' width='0' height='0'/>" );

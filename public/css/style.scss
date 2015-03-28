@@ -52,7 +52,7 @@ a {
 
 #map-canvas {
 	width: 100%;
-	height: 380px;
+	height: 270px;
 }
 
 #toolbar, #searchbar {
@@ -86,11 +86,8 @@ a {
 }
 
 button.seeit {
-	width: 90%;
-	height: 2em;
-	padding: 0em;
+	width: 60%;
 	margin: 0.25em 5%;
-	background-color: green;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
 }
