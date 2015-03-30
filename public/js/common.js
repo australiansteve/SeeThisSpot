@@ -19,15 +19,18 @@ $(document).ready(function() {
     $('#lat').attr("value", centerMarker.getPosition().lat());
     $('#lng').attr("value", centerMarker.getPosition().lng());
     
-    //Clear the current search resultschrome
+    //Clear the current search results
     $('#resultslist').html("");
+
 
     //Search ajax request off to /search which will first create a subscription, then start returning results
     $.get('/search', $this.serialize(), function( renderedResults ) {
       //console.log(renderedResults);
       $('#resultslist').append(renderedResults);
 
-      $('#footer>div').append("<a id='authenticate' class='radius button' href='/login?return_to=backfill'>Login to Instagram for more...</a>");
+      if ($('#authenticate').length == 0) {
+        $('#footer>div').append("<a id='authenticate' class='radius button' href='/login?return_to=backfill'>Login to Instagram for more...</a>");
+      }
     }, 'html');
 
   });
