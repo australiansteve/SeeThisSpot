@@ -79,6 +79,8 @@ $(document).ready(function() {
 
         //Backfill ajax request off to /search which will first create a subscription, then start returning results
         $.get('/search/backfill', function( renderedResults ) {
+          //Remove any 'nosearchresult' items
+          $('#nosearchresult').remove();
           $('#resultslist').append(renderedResults);
           backfillInProgress = false;
         }, 'html');

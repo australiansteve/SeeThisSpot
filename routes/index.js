@@ -15,14 +15,15 @@ router.get('/', function(req, res) {
   if (sess.user) {
 
   	//Next we need to get the latest images for that spot  
-  	Instagram.performSearch(sess.search.lat, sess.search.lng, sess.search.radius, 'now', function(results){
+  	Instagram.performSearch(sess.search.lat, sess.search.lng, sess.search.radius, 'now', function(resultsObj){
 
-	    var resultsObj = JSON.parse(results);
-
-	    //put the time of the last result into the session to make backfilling quicker later
-	    sess.search.min_time = resultsObj.data[resultsObj.data.length-1].created_time;
-
-      app.render('results', { data : resultsObj.data } , function(err, html) {
+      if (resultsObj.length > 0) {
+        //put the time of the last result into the session
+        var next_time = resultsObj[resultsObj.length-1].created_time - (resultsObj[resultsObj.length-1].created_time % 60);
+        sess.search.next_max_time = next_time;
+      }
+      
+      app.render('results', { data : resultsObj } , function(err, html) {
         if (err) {
           console.log(err);
         }

@@ -19,15 +19,15 @@ router.get('/', function(req, res) {
   sess.search = search;
 
   //Next we need to get the latest images for that spot  
-  Instagram.performSearch(search.lat, search.lng, search.radius, 'now', function(results) {
+  Instagram.performSearch(search.lat, search.lng, search.radius, 'now', function(resultsObj) {
 
-    var resultsObj = JSON.parse(results);
+    if (resultsObj.length > 0) {
+      //put the time of the last result into the session
+      var next_time = resultsObj[resultsObj.length-1].created_time - (resultsObj[resultsObj.length-1].created_time % 60);
+      sess.search.next_max_time = next_time;
+    }
 
-    //put the time of the last result into the session to make backfilling quicker later
-    sess.search.next_max_time = resultsObj.data[resultsObj.data.length-1].created_time;
-
-    res.render('results', { data : resultsObj.data });
-
+    res.render('results', { data : resultsObj });
 
   });
 
@@ -41,17 +41,17 @@ router.get('/backfill', function(req, res) {
   console.log("Backfill: " + JSON.stringify(sess.search) + ", user: " + JSON.stringify(sess.user));
 
   if (sess.search && sess.user) {
-    console.log("Backfilling...");
+    console.log("Backfilling... " + sess.search.next_max_time);
 
     //Next we need to get the latest images for that spot  
-    Instagram.performSearch(sess.search.lat, sess.search.lng, sess.search.radius, sess.search.next_max_time, function(results){
+    Instagram.performSearch(sess.search.lat, sess.search.lng, sess.search.radius, sess.search.next_max_time, function(resultsObj){
 
-      var resultsObj = JSON.parse(results);
-
-      //put the time of the last result into the session to make backfilling quicker later
-      sess.search.next_max_time = resultsObj.data[resultsObj.data.length-1].created_time;
-
-      res.render('results', { data : resultsObj.data });
+      if (resultsObj.length > 0) {
+        //put the time of the last result into the session
+        var next_time = resultsObj[resultsObj.length-1].created_time - (resultsObj[resultsObj.length-1].created_time % 60);
+        sess.search.next_max_time = next_time;
+      }
+      res.render('results', { data : resultsObj });
 
     });
 
