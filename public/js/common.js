@@ -22,7 +22,6 @@ $(document).ready(function() {
     //Clear the current search results
     $('#resultslist').html("");
 
-
     //Search ajax request off to /search which will first create a subscription, then start returning results
     $.get('/search', $this.serialize(), function( renderedResults ) {
       //console.log(renderedResults);
@@ -31,6 +30,8 @@ $(document).ready(function() {
       if ($('#authenticate').length == 0) {
         $('#footer>div').append("<a id='authenticate' class='radius button' href='/login?return_to=backfill'>Login to Instagram for more...</a>");
       }
+
+      updateToFriendlyTimes();
     }, 'html');
 
   });
@@ -83,6 +84,8 @@ $(document).ready(function() {
           $('#nosearchresult').remove();
           $('#resultslist').append(renderedResults);
           backfillInProgress = false;
+
+          updateToFriendlyTimes();
         }, 'html');
 
         backfillInProgress = true;
@@ -91,8 +94,44 @@ $(document).ready(function() {
         
   });
 
+  updateToFriendlyTimes();
 
   $(document).foundation('offcanvas', 'reflow');
   $(document).foundation('reveal', 'reflow');
 
 });
+
+function updateToFriendlyTimes() {
+
+  var currentTime = Math.ceil(new Date().getTime() / 1000); //Current time in seconds, rounded up
+
+  //Update the timestamp on each photo to be in human readable form
+  $('.timer .raw').each(function(index) {
+    //console.log("Convert " + $(this).text() + " to human form");
+    //console.log("Current time " + currentTime);
+    var timeDiff = currentTime - parseInt($(this).text());
+    //console.log("Diff " + timeDiff);
+    var friendlyTime = "";
+
+    if ((timeDiff / 60) < 1) { //Under 1 minute
+      friendlyTime = timeDiff + "s";
+    }
+    else if ((timeDiff / 3600) < 1) { //under 1 hour
+      friendlyTime = Math.floor(timeDiff/60) + "m";//Convert seconds to minutes
+    }
+    else if ((timeDiff / 86400) < 1) { //under 1 day
+      friendlyTime = Math.floor(timeDiff/3660) + "h";//Convert seconds to hours
+    }
+    else if ((timeDiff / 604800) < 1) { //under 1 week
+      friendlyTime = Math.floor(timeDiff/86400) + "d";//Convert seconds to days
+    }
+    else { //over 1 week
+      friendlyTime = Math.floor(timeDiff/604800) + "w";//Convert seconds to weeks
+    }
+
+    //console.log("Friendly time: " + friendlyTime);
+    $(this).text(friendlyTime);
+    $(this).removeClass("raw");
+
+  });
+}
