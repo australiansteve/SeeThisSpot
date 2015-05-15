@@ -54,24 +54,27 @@ var Instagram = function() {
 
   }
 
-  var performSearch = function(lat, lng, radius, max_time, searchCallback) {
+  var performSearch = function(lat, lng, radius, max_time, access_token, searchCallback ) {
 
     //GET
     //https://api.instagram.com/v1/media/search?lat=48.858844&lng=2.294351&client_id=YOUR-CLIENT_IDs
     
+    var user_data = (access_token === undefined) ? "&client_id=" + config.instagram.client_id : "&access_token=" + access_token ;
+
     // Build the querystring from an object
     var get_data = querystring.stringify({
       'lat' : lat,
       'lng' : lng,
       'distance' : radius,
-      'count' : '20',
-      'client_id' : config.instagram.client_id
+      'count' : '20'
     });
+
+    get_data += user_data;
     
     //Add date ranges - 604800 = 7 days, the maximum range that Instagram allows
     if (max_time == 'now')
     {
-      max_time = new Date().getTime() / 1000; //Need seconds not milliseconds
+      max_time = new Date().getTime() / 1000 >> 0; //Need seconds not milliseconds, no remainder
     }
     var min_time = max_time;
 

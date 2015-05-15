@@ -15,7 +15,7 @@ router.get('/', function(req, res) {
   if (sess.user) {
 
   	//Next we need to get the latest images for that spot  
-  	Instagram.performSearch(sess.search.lat, sess.search.lng, sess.search.radius, 'now', function(resultsObj){
+  	Instagram.performSearch(sess.search.lat, sess.search.lng, sess.search.radius, 'now', sess.access_token, function(resultsObj){
 
       if (resultsObj.length > 0) {
         //put the time of the last result into the session

@@ -19,7 +19,7 @@ router.get('/', function(req, res) {
   sess.search = search;
 
   //Next we need to get the latest images for that spot  
-  Instagram.performSearch(search.lat, search.lng, search.radius, 'now', function(resultsObj) {
+  Instagram.performSearch(search.lat, search.lng, search.radius, 'now', sess.access_token, function(resultsObj) {
 
     if (resultsObj.length > 0) {
       //put the time of the last result into the session
@@ -44,7 +44,7 @@ router.get('/backfill', function(req, res) {
     console.log("Backfilling... " + sess.search.next_max_time);
 
     //Next we need to get the latest images for that spot  
-    Instagram.performSearch(sess.search.lat, sess.search.lng, sess.search.radius, sess.search.next_max_time, function(resultsObj){
+    Instagram.performSearch(sess.search.lat, sess.search.lng, sess.search.radius, sess.search.next_max_time, sess.access_token, function(resultsObj){
 
       if (resultsObj.length > 0) {
         //put the time of the last result into the session
