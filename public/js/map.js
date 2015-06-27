@@ -80,7 +80,7 @@ function displayMap(mapOptions, radius) {
     var places = searchBox.getPlaces();
 
     if (places.length > 0) {
-      map.setCenter(new google.maps.LatLng(places[0].geometry.location.k, places[0].geometry.location.D));
+      map.setCenter(places[0].geometry.location);
       distanceWidget.clear_markers();
       distanceWidget = new DistanceWidget(map, (document.search.searchradius.value/1000));
     }
